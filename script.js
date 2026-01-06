@@ -296,14 +296,22 @@ function renderRecipes() {
     recipes.forEach((recipe, index) => {
         const card = document.createElement('article');
         card.className = 'recipe-card';
+        // Fix: Set the attribute for CSS selector AND style
+        card.setAttribute('data-animation-delay', (index * 50) + 'ms');
         card.style.animationDelay = `${index * 50}ms`;
         
         const t = translations[selectedLanguage];
-        
+        // Use encodeURIComponent to safely handle filenames with spaces
+        const safeImagePath = recipe.image.split('/').map(part => encodeURIComponent(part)).join('/').replace('images%2F', 'images/'); // quick fix to keep 'images/' prefix unencoded but file encoded
+
+        // actually getImagePath returns "images/File.png"
+        // we want "images/File%20Name.png"
+        const finalImage = recipe.image.replace(/images\/(.+)/, (match, p1) => 'images/' + encodeURIComponent(p1));
+
         card.innerHTML = `
             <div class="flex flex-col">
                 <div class="recipe-image-container">
-                    <img src="${recipe.image}" alt="${recipe.name[selectedLanguage]}" draggable="false" 
+                    <img src="${finalImage}" alt="${recipe.name[selectedLanguage]}" draggable="false" 
                          oncontextmenu="return false;" onclick="event.preventDefault(); event.stopPropagation();"
                          onerror="this.onerror=null; this.src='images/placeholder.png';">
                 </div>
