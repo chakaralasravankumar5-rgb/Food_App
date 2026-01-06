@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food App - Traditional Recipe Collection</title>
+    <meta name="description" content="Food Recipe Application">
+    <link rel="icon" type="image/png" href="public/image.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: hsl(39, 33%, 97%);
+            --foreground: hsl(25, 30%, 12%);
+            --card: hsl(39, 40%, 99%);
+            --card-foreground: hsl(25, 30%, 12%);
+            --primary: hsl(32, 90%, 50%);
+            --primary-foreground: hsl(39, 40%, 99%);
+            --secondary: hsl(39, 30%, 92%);
+            --secondary-foreground: hsl(25, 30%, 20%);
+            --muted: hsl(39, 20%, 90%);
+            --muted-foreground: hsl(25, 15%, 45%);
+            --accent: hsl(145, 40%, 45%);
+            --accent-foreground: hsl(39, 40%, 99%);
+            --border: hsl(32, 25%, 85%);
+            --radius: 0.75rem;
+            --gradient-warm: linear-gradient(135deg, hsl(32, 90%, 50%) 0%, hsl(25, 85%, 45%) 100%);
+            --gradient-card: linear-gradient(180deg, hsl(39, 40%, 99%) 0%, hsl(39, 35%, 96%) 100%);
+            --shadow-soft: 0 4px 20px -4px hsla(25, 30%, 12%, 0.1);
+            --shadow-elevated: 0 12px 40px -12px hsla(25, 30%, 12%, 0.15);
+            --overlay-dark: hsla(25, 30%, 8%, 0.55);
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Source Sans 3', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Language Selection Screen */
+        .language-selection {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            background-color: var(--background);
+        }
+
+        .language-selection-content {
+            text-align: center;
+            max-width: 42rem;
+            margin: 0 auto;
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        .language-selection-content .emoji {
+            display: inline-block;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .language-selection-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .language-selection-content h1 {
+                font-size: 3rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .language-selection-content h1 {
+                font-size: 3.75rem;
+            }
+        }
+
+        .text-gradient {
+            background: var(--gradient-warm);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .language-selection-content p {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            margin-bottom: 2.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .language-selection-content p {
+                font-size: 1.25rem;
+            }
+        }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .language-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .lang-btn {
+            background: var(--gradient-card);
+            box-shadow: var(--shadow-soft);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .lang-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            background: var(--gradient-warm);
+        }
+
+        .lang-btn:hover::before {
+            opacity: 0.1;
+        }
+
+        .lang-btn:hover {
+            border-color: hsla(32, 90%, 50%, 0.5);
+            box-shadow: var(--shadow-elevated);
+            transform: translateY(-2px);
+        }
+
+        .lang-btn:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: var(--primary);
+            ring-offset: 2px;
+        }
+
+        .lang-btn .native-name {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .lang-btn .lang-name {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        /* Main App */
+        .main-app {
+            display: none;
+            min-height: 100vh;
+            background-color: var(--background);
+        }
+
+        .main-app.active {
+            display: block;
+        }
+
+        /* Header */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: hsla(39, 33%, 97%, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+        }
+
+        .header-content h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        @media (min-width: 768px) {
+            .header-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .lang-switch-btn {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .lang-switch-btn:hover {
+            background-color: hsla(39, 30%, 92%, 0.8);
+        }
+
+        .lang-switch-btn.active {
+            background: var(--gradient-warm);
+            color: var(--primary-foreground);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+
+        @media (min-width: 768px) {
+            .hero-section {
+                padding: 6rem 1rem;
+            }
+        }
+
+        .hero-content {
+            max-width: 48rem;
+            margin: 0 auto;
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        .hero-emoji {
+            display: inline-block;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .hero-title {
+                font-size: 3.75rem;
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            line-height: 1.75;
+        }
+
+        @media (min-width: 768px) {
+            .hero-subtitle {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Parallax Section */
+        .parallax-section {
+            position: relative;
+            padding: 5rem 0;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        @media (min-width: 768px) {
+            .parallax-section {
+                padding: 8rem 0;
+            }
+        }
+
+        .overlay-dark {
+            position: absolute;
+            inset: 0;
+            background: var(--overlay-dark);
+        }
+
+        .recipes-container {
+            position: relative;
+            z-index: 10;
+            padding: 0 1rem;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            max-width: 80rem;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .recipes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .recipes-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .recipe-card {
+            background: var(--gradient-card);
+            box-shadow: var(--shadow-soft);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recipe-card:hover {
+            box-shadow: var(--shadow-elevated);
+            transform: translateY(-4px);
+        }
+
+        .recipe-image-container {
+            aspect-ratio: 1;
+            overflow: hidden;
+        }
+
+        .recipe-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .recipe-content {
+            padding: 1.25rem;
+        }
+
+        .recipe-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-bottom: 0.75rem;
+        }
+
+        .benefits-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            color: var(--card-foreground);
+        }
+
+        .benefit-bullet {
+            display: inline-block;
+            width: 0.375rem;
+            height: 0.375rem;
+            border-radius: 50%;
+            background-color: var(--accent);
+            margin-top: 0.375rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-text {
+            font-size: 0.875rem;
+            line-height: 1.75;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 1rem;
+            background-color: hsla(39, 30%, 92%, 0.5);
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        .recipe-card[data-animation-delay] {
+            opacity: 0;
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Selection Screen -->
+    <div id="languageSelection" class="language-selection">
+        <div class="language-selection-content">
+            <div>
+                <span class="emoji">🍯</span>
+                <h1>
+                    <span class="text-gradient">Recipe</span> Collection
+                </h1>
+                <p id="selectLanguageText">Select Your Language</p>
+            </div>
+            <div class="language-grid">
+                <button class="lang-btn" data-lang="en">
+                    <span class="native-name">English</span>
+                    <span class="lang-name">English</span>
+                </button>
+                <button class="lang-btn" data-lang="te">
+                    <span class="native-name">తెలుగు</span>
+                    <span class="lang-name">Telugu</span>
+                </button>
+                <button class="lang-btn" data-lang="hi">
+                    <span class="native-name">हिन्दी</span>
+                    <span class="lang-name">Hindi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="main-app">
+        <!-- Header -->
+        <header>
+            <div class="container header-content">
+                <h2>
+                    <span class="text-gradient">Recipe</span> Collection
+                </h2>
+                <div class="lang-switcher">
+                    <button class="lang-switch-btn" data-lang="en">English</button>
+                    <button class="lang-switch-btn" data-lang="te">తెలుగు</button>
+                    <button class="lang-switch-btn" data-lang="hi">हिन्दी</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <span class="hero-emoji">✨</span>
+                    <h1 id="heroTitle" class="hero-title">Traditional Recipe Collection</h1>
+                    <p id="heroSubtitle" class="hero-subtitle">Discover the health benefits of authentic Indian delicacies</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parallax Section with Recipes -->
+        <section class="parallax-section" id="parallaxSection">
+            <div class="overlay-dark"></div>
+            <div class="container recipes-container">
+                <div class="recipes-grid" id="recipesGrid">
+                    <!-- Recipes will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>Made with ❤️ for food lovers everywhere</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Recipe Data
+        const recipes = [
+            {
+                id: 1,
+                image: 'src/assets/dry-fruits-laddu.jpg',
+                name: { en: "Dry Fruits Laddu", te: "డ్రై ఫ్రూట్స్ లడ్డు", hi: "ड्राई फ्रूट्स लड्डू" },
+                benefits: {
+                    en: ["Provides instant energy due to natural sugars from dates", "Rich in iron, calcium, and healthy fats", "Improves brain function and stamina", "Strengthens immunity"],
+                    te: ["ఖర్జూరాల నుండి సహజ చక్కెరల వల్ల తక్షణ శక్తిని అందిస్తుంది", "ఇనుము, కాల్షియం మరియు ఆరోగ్యకరమైన కొవ్వులు అధికంగా ఉంటాయి", "మెదడు పనితీరు మరియు శక్తిని మెరుగుపరుస్తుంది", "రోగనిరోధక శక్తిని బలపరుస్తుంది"],
+                    hi: ["खजूर से प्राकृतिक शर्करा के कारण तुरंत ऊर्जा प्रदान करता है", "आयरन, कैल्शियम और स्वस्थ वसा से भरपूर", "मस्तिष्क कार्य और सहनशक्ति में सुधार करता है", "रोग प्रतिरोधक क्षमता को मजबूत करता है"]
+                }
+            },
+            {
+                id: 2,
+                image: 'src/assets/coconut-burfi.jpg',
+                name: { en: "Coconut Burfi", te: "కొబ్బరి బర్ఫీ", hi: "नारियल बर्फी" },
+                benefits: {
+                    en: ["Good source of healthy fats and fiber", "Improves digestion", "Provides quick energy", "Supports heart health when consumed in moderation"],
+                    te: ["ఆరోగ్యకరమైన కొవ్వులు మరియు ఫైబర్ యొక్క మంచి మూలం", "జీర్ణక్రియను మెరుగుపరుస్తుంది", "త్వరిత శక్తిని అందిస్తుంది", "మితంగా తీసుకున్నప్పుడు గుండె ఆరోగ్యానికి తోడ్పడుతుంది"],
+                    hi: ["स्वस्थ वसा और फाइबर का अच्छा स्रोत", "पाचन में सुधार करता है", "त्वरित ऊर्जा प्रदान करता है", "संयमित मात्रा में सेवन करने पर हृदय स्वास्थ्य का समर्थन करता है"]
+                }
+            },
+            {
+                id: 3,
+                image: 'src/assets/beetroot-halwa.jpg',
+                name: { en: "Beetroot Halwa", te: "బీట్రూట్ హల్వా", hi: "चुकंदर का हलवा" },
+                benefits: {
+                    en: ["Improves blood circulation", "Increases hemoglobin levels", "Boosts stamina and endurance", "Supports liver detoxification"],
+                    te: ["రక్త ప్రసరణను మెరుగుపరుస్తుంది", "హిమోగ్లోబిన్ స్థాయిలను పెంచుతుంది", "శక్తి మరియు సహనశక్తిని పెంచుతుంది", "కాలేయ విషపూరితత్వానికి మద్దతు ఇస్తుంది"],
+                    hi: ["रक्त संचार में सुधार करता है", "हीमोग्लोबिन के स्तर को बढ़ाता है", "सहनशक्ति और धीरज बढ़ाता है", "लिवर डिटॉक्सिफिकेशन में मदद करता है"]
+                }
+            },
+            {
+                id: 4,
+                image: 'src/assets/lemon-rice.jpg',
+                name: { en: "Lemon Rice (Flattened Rice)", te: "నిమ్మకాయ అన్నం (అటుకులు)", hi: "नींबू चावल (पोहा)" },
+                benefits: {
+                    en: ["Easy to digest and light on the stomach", "Lemon improves immunity and digestion", "Provides instant energy", "Prevents dehydration"],
+                    te: ["సులభంగా జీర్ణమవుతుంది మరియు కడుపుపై తేలికగా ఉంటుంది", "నిమ్మకాయ రోగనిరోధక శక్తి మరియు జీర్ణక్రియను మెరుగుపరుస్తుంది", "తక్షణ శక్తిని అందిస్తుంది", "నిర్జలీకరణను నివారిస్తుంది"],
+                    hi: ["पचाने में आसान और पेट पर हल्का", "नींबू प्रतिरक्षा और पाचन में सुधार करता है", "तुरंत ऊर्जा प्रदान करता है", "निर्जलीकरण को रोकता है"]
+                }
+            },
+            {
+                id: 5,
+                image: 'src/assets/curd-rice.jpg',
+                name: { en: "Curd Rice", te: "పెరుగన్నం", hi: "दही चावल" },
+                benefits: {
+                    en: ["Improves gut health due to probiotics", "Keeps the body cool", "Enhances digestion", "Strengthens immunity"],
+                    te: ["ప్రోబయోటిక్స్ వల్ల పేగు ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "శరీరాన్ని చల్లగా ఉంచుతుంది", "జీర్ణక్రియను మెరుగుపరుస్తుంది", "రోగనిరోధక శక్తిని బలపరుస్తుంది"],
+                    hi: ["प्रोबायोटिक्स के कारण आंत के स्वास्थ्य में सुधार करता है", "शरीर को ठंडा रखता है", "पाचन को बढ़ाता है", "रोग प्रतिरोधक क्षमता को मजबूत करता है"]
+                }
+            },
+            {
+                id: 6,
+                image: 'src/assets/carrot-poriyal.jpg',
+                name: { en: "Carrot Poriyal", te: "క్యారెట్ పోరియల్", hi: "गाजर पोरियल" },
+                benefits: {
+                    en: ["Rich in vitamin A for good eyesight", "Improves skin health", "Boosts immunity", "Aids digestion"],
+                    te: ["మంచి దృష్టి కోసం విటమిన్ A అధికంగా ఉంటుంది", "చర్మ ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "రోగనిరోధక శక్తిని పెంచుతుంది", "జీర్ణక్రియకు సహాయపడుతుంది"],
+                    hi: ["अच्छी दृष्टि के लिए विटामिन A से भरपूर", "त्वचा के स्वास्थ्य में सुधार करता है", "रोग प्रतिरोधक क्षमता बढ़ाता है", "पाचन में सहायता करता है"]
+                }
+            },
+            {
+                id: 7,
+                image: 'src/assets/sprout-salad.jpg',
+                name: { en: "Sprout Salad", te: "మొలకెత్తిన సలాడ్", hi: "अंकुरित सलाद" },
+                benefits: {
+                    en: ["High in protein and fiber", "Supports muscle growth", "Improves digestion", "Helps in weight management"],
+                    te: ["ప్రోటీన్ మరియు ఫైబర్ అధికంగా ఉంటుంది", "కండరాల వృద్ధికి తోడ్పడుతుంది", "జీర్ణక్రియను మెరుగుపరుస్తుంది", "బరువు నిర్వహణలో సహాయపడుతుంది"],
+                    hi: ["प्रोटीन और फाइबर से भरपूर", "मांसपेशियों की वृद्धि में सहायक", "पाचन में सुधार करता है", "वजन प्रबंधन में मदद करता है"]
+                }
+            },
+            {
+                id: 8,
+                image: 'src/assets/spinach-salad.jpg',
+                name: { en: "Green (Spinach) Salad", te: "ఆకు కూరల సలాడ్ (పాలకూర)", hi: "हरी (पालक) सलाद" },
+                benefits: {
+                    en: ["Rich in iron and calcium", "Improves blood health", "Strengthens bones", "Boosts immunity"],
+                    te: ["ఇనుము మరియు కాల్షియం అధికంగా ఉంటుంది", "రక్త ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "ఎముకలను బలపరుస్తుంది", "రోగనిరోధక శక్తిని పెంచుతుంది"],
+                    hi: ["आयरन और कैल्शियम से भरपूर", "रक्त स्वास्थ्य में सुधार करता है", "हड्डियों को मजबूत करता है", "रोग प्रतिरोधक क्षमता बढ़ाता है"]
+                }
+            },
+            {
+                id: 9,
+                image: 'src/assets/fruit-salad.jpg',
+                name: { en: "Fruit Salad", te: "పండ్ల సలాడ్", hi: "फल सलाद" },
+                benefits: {
+                    en: ["Rich in vitamins and antioxidants", "Improves digestion", "Keeps the body hydrated", "Enhances skin health"],
+                    te: ["విటమిన్లు మరియు యాంటీఆక్సిడెంట్లు అధికంగా ఉంటాయి", "జీర్ణక్రియను మెరుగుపరుస్తుంది", "శరీరాన్ని హైడ్రేటెడ్‌గా ఉంచుతుంది", "చర్మ ఆరోగ్యాన్ని మెరుగుపరుస్తుంది"],
+                    hi: ["विटामिन और एंटीऑक्सीडेंट से भरपूर", "पाचन में सुधार करता है", "शरीर को हाइड्रेटेड रखता है", "त्वचा के स्वास्थ्य को बढ़ाता है"]
+                }
+            },
+            {
+                id: 10,
+                image: 'src/assets/groundnut-salad.jpg',
+                name: { en: "Groundnut Salad", te: "వేరుశెనగ సలాడ్", hi: "मूंगफली सलाद" },
+                benefits: {
+                    en: ["Good source of plant protein", "Provides healthy fats", "Improves heart health", "Gives long-lasting energy"],
+                    te: ["మొక్కల ప్రోటీన్ యొక్క మంచి మూలం", "ఆరోగ్యకరమైన కొవ్వులను అందిస్తుంది", "గుండె ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "దీర్ఘకాలిక శక్తిని అందిస్తుంది"],
+                    hi: ["पौधा प्रोटीन का अच्छा स्रोत", "स्वस्थ वसा प्रदान करता है", "हृदय स्वास्थ्य में सुधार करता है", "लंबे समय तक ऊर्जा देता है"]
+                }
+            },
+            {
+                id: 11,
+                image: 'src/assets/tomato-chat.jpg',
+                name: { en: "Tomato Chat", te: "టమాటా చాట్", hi: "टमाटर चाट" },
+                benefits: {
+                    en: ["Rich in vitamin C and antioxidants", "Improves skin health", "Boosts immunity", "Aids digestion"],
+                    te: ["విటమిన్ C మరియు యాంటీఆక్సిడెంట్లు అధికంగా ఉంటాయి", "చర్మ ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "రోగనిరోధక శక్తిని పెంచుతుంది", "జీర్ణక్రియకు సహాయపడుతుంది"],
+                    hi: ["विटामिन C और एंटीऑक्सीडेंट से भरपूर", "त्वचा के स्वास्थ्य में सुधार करता है", "रोग प्रतिरोधक क्षमता बढ़ाता है", "पाचन में सहायता करता है"]
+                }
+            },
+            {
+                id: 12,
+                image: 'src/assets/red-aval-payasam.jpg',
+                name: { en: "Red Aval Payasam", te: "ఎర్ర అటుకుల పాయసం", hi: "लाल पोहा खीर" },
+                benefits: {
+                    en: ["Rich in iron and fiber", "Improves digestion", "Provides sustained energy", "Helps prevent anemia"],
+                    te: ["ఇనుము మరియు ఫైబర్ అధికంగా ఉంటుంది", "జీర్ణక్రియను మెరుగుపరుస్తుంది", "నిరంతర శక్తిని అందిస్తుంది", "రక్తహీనతను నివారించడంలో సహాయపడుతుంది"],
+                    hi: ["आयरन और फाइबर से भरपूर", "पाचन में सुधार करता है", "निरंतर ऊर्जा प्रदान करता है", "एनीमिया को रोकने में मदद करता है"]
+                }
+            },
+            {
+                id: 13,
+                image: 'src/assets/elaneer-payasam.jpg',
+                name: { en: "Elaneer Payasam", te: "ఎలనీర్ పాయసం", hi: "इलनीर पायसम" },
+                benefits: {
+                    en: ["Natural coolant for the body", "Prevents dehydration", "Improves digestion", "Rich in electrolytes"],
+                    te: ["శరీరానికి సహజ శీతలకారిణి", "నిర్జలీకరణను నివారిస్తుంది", "జీర్ణక్రియను మెరుగుపరుస్తుంది", "ఎలక్ట్రోలైట్లు అధికంగా ఉంటాయి"],
+                    hi: ["शरीर के लिए प्राकृतिक शीतलक", "निर्जलीकरण को रोकता है", "पाचन में सुधार करता है", "इलेक्ट्रोलाइट्स से भरपूर"]
+                }
+            },
+            {
+                id: 14,
+                image: 'src/assets/mango-pickle.jpg',
+                name: { en: "Instant Mango Pickle", te: "ఇన్‌స్టంట్ మామిడి ఊరగాయ", hi: "इंस्टेंट आम का अचार" },
+                benefits: {
+                    en: ["Improves appetite", "Aids digestion", "Rich in vitamin C", "Enhances taste and flavor"],
+                    te: ["ఆకలిని మెరుగుపరుస్తుంది", "జీర్ణక్రియకు సహాయపడుతుంది", "విటమిన్ C అధికంగా ఉంటుంది", "రుచి మరియు ఫ్లేవర్‌ను మెరుగుపరుస్తుంది"],
+                    hi: ["भूख में सुधार करता है", "पाचन में सहायता करता है", "विटामिन C से भरपूर", "स्वाद और फ्लेवर बढ़ाता है"]
+                }
+            },
+            {
+                id: 15,
+                image: 'src/assets/gooseberry-pickle.jpg',
+                name: { en: "Gooseberry Pickle", te: "ఉసిరికాయ ఊరగాయ", hi: "आंवला अचार" },
+                benefits: {
+                    en: ["Extremely rich in vitamin C", "Strengthens immunity", "Improves hair and skin health", "Supports digestion"],
+                    te: ["విటమిన్ C అత్యధికంగా ఉంటుంది", "రోగనిరోధక శక్తిని బలపరుస్తుంది", "జుట్టు మరియు చర్మ ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "జీర్ణక్రియకు తోడ్పడుతుంది"],
+                    hi: ["विटामिन C से अत्यधिक समृद्ध", "रोग प्रतिरोधक क्षमता को मजबूत करता है", "बालों और त्वचा के स्वास्थ्य में सुधार करता है", "पाचन में सहायक"]
+                }
+            },
+            {
+                id: 16,
+                image: 'src/assets/aloe-vera-juice.jpg',
+                name: { en: "Aloe Vera Juice", te: "కలబంద రసం", hi: "एलोवेरा जूस" },
+                benefits: {
+                    en: ["Improves digestion", "Detoxifies the body", "Enhances skin health", "Boosts immunity"],
+                    te: ["జీర్ణక్రియను మెరుగుపరుస్తుంది", "శరీరాన్ని విషపూరితం చేస్తుంది", "చర్మ ఆరోగ్యాన్ని మెరుగుపరుస్తుంది", "రోగనిరోధక శక్తిని పెంచుతుంది"],
+                    hi: ["पाचन में सुधार करता है", "शरीर को डिटॉक्सीफाई करता है", "त्वचा के स्वास्थ्य को बढ़ाता है", "रोग प्रतिरोधक क्षमता बढ़ाता है"]
+                }
+            },
+            {
+                id: 17,
+                image: 'src/assets/pudina-juice.jpg',
+                name: { en: "Pudina Juice", te: "పుదీనా రసం", hi: "पुदीना जूस" },
+                benefits: {
+                    en: ["Improves digestion", "Relieves acidity", "Refreshes the body", "Supports respiratory health"],
+                    te: ["జీర్ణక్రియను మెరుగుపరుస్తుంది", "ఆమ్లత్వాన్ని తగ్గిస్తుంది", "శరీరాన్ని రిఫ్రెష్ చేస్తుంది", "శ్వాసకోశ ఆరోగ్యానికి తోడ్పడుతుంది"],
+                    hi: ["पाचन में सुधार करता है", "एसिडिटी से राहत देता है", "शरीर को तरोताजा करता है", "श्वसन स्वास्थ्य में सहायक"]
+                }
+            },
+            {
+                id: 18,
+                image: 'src/assets/kulukki-sarbath.jpg',
+                name: { en: "Kulukki Sarbath", te: "కులుక్కి షర్బత్", hi: "कुलुक्की शर्बत" },
+                benefits: {
+                    en: ["Refreshing summer drink", "Prevents dehydration", "Rich in vitamin C", "Boosts energy instantly"],
+                    te: ["రిఫ్రెషింగ్ వేసవి పానీయం", "నిర్జలీకరణను నివారిస్తుంది", "విటమిన్ C అధికంగా ఉంటుంది", "తక్షణంగా శక్తిని పెంచుతుంది"],
+                    hi: ["ताजगी देने वाला गर्मियों का पेय", "निर्जलीकरण को रोकता है", "विटामिन C से भरपूर", "तुरंत ऊर्जा बढ़ाता है"]
+                }
+            }
+        ];
+
+        // Translations
+        const translations = {
+            en: {
+                selectLanguage: "Select Your Language",
+                title: "Traditional Recipe Collection",
+                subtitle: "Discover the health benefits of authentic Indian delicacies",
+                benefits: "Health Benefits"
+            },
+            te: {
+                selectLanguage: "మీ భాషను ఎంచుకోండి",
+                title: "సంప్రదాయ వంటకాల సేకరణ",
+                subtitle: "అసలైన భారతీయ వంటకాల ఆరోగ్య ప్రయోజనాలను కనుగొనండి",
+                benefits: "ఆరోగ్య ప్రయోజనాలు"
+            },
+            hi: {
+                selectLanguage: "अपनी भाषा चुनें",
+                title: "पारंपरिक व्यंजन संग्रह",
+                subtitle: "प्रामाणिक भारतीय व्यंजनों के स्वास्थ्य लाभ जानें",
+                benefits: "स्वास्थ्य लाभ"
+            }
+        };
+
+        // State
+        let selectedLanguage = null;
+
+        // DOM Elements
+        const languageSelection = document.getElementById('languageSelection');
+        const mainApp = document.getElementById('mainApp');
+        const selectLanguageText = document.getElementById('selectLanguageText');
+        const heroTitle = document.getElementById('heroTitle');
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        const recipesGrid = document.getElementById('recipesGrid');
+        const parallaxSection = document.getElementById('parallaxSection');
+
+        // Set parallax background
+        parallaxSection.style.backgroundImage = "url('src/assets/food-parallax-bg.jpg')";
+
+        // Language Selection Handlers
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                selectLanguage(lang);
+            });
+        });
+
+        // Language Switcher Handlers
+        document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                selectLanguage(lang);
+            });
+        });
+
+        function selectLanguage(lang) {
+            selectedLanguage = lang;
+            
+            // Hide language selection, show main app
+            languageSelection.style.display = 'none';
+            mainApp.classList.add('active');
+            
+            // Update language switcher buttons
+            document.querySelectorAll('.lang-switch-btn').forEach(btn => {
+                if (btn.getAttribute('data-lang') === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update content
+            updateContent();
+            renderRecipes();
+        }
+
+        function updateContent() {
+            const t = translations[selectedLanguage];
+            heroTitle.textContent = t.title;
+            heroSubtitle.textContent = t.subtitle;
+        }
+
+        function renderRecipes() {
+            recipesGrid.innerHTML = '';
+            
+            recipes.forEach((recipe, index) => {
+                const card = document.createElement('article');
+                card.className = 'recipe-card';
+                card.style.animationDelay = `${index * 50}ms`;
+                
+                const t = translations[selectedLanguage];
+                
+                card.innerHTML = `
+                    <div class="flex flex-col">
+                        <div class="recipe-image-container">
+                            <img src="${recipe.image}" alt="${recipe.name[selectedLanguage]}" draggable="false" 
+                                 oncontextmenu="return false;" onclick="event.preventDefault(); event.stopPropagation();">
+                        </div>
+                        <div class="recipe-content">
+                            <h3 class="recipe-title">${recipe.name[selectedLanguage]}</h3>
+                            <div>
+                                <h4 class="benefits-label">${t.benefits}</h4>
+                                <ul class="benefits-list">
+                                    ${recipe.benefits[selectedLanguage].map(benefit => `
+                                        <li class="benefit-item">
+                                            <span class="benefit-bullet"></span>
+                                            <span class="benefit-text">${benefit}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                recipesGrid.appendChild(card);
+            });
+        }
+
+        // Prevent image dragging and right-click
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('contextmenu', (e) => {
+                if (e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

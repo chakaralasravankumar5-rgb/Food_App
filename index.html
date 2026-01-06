@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food App - Traditional Recipe Collection</title>
+    <meta name="description" content="Food Recipe Application">
+    <link rel="icon" type="image/png" href="public/image.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Language Selection Screen -->
+    <div id="languageSelection" class="language-selection">
+        <div class="language-selection-content">
+            <div>
+                <span class="emoji">🍯</span>
+                <h1>
+                    <span class="text-gradient">Recipe</span> Collection
+                </h1>
+                <p id="selectLanguageText">Select Your Language</p>
+            </div>
+            <div class="language-grid">
+                <button class="lang-btn" data-lang="en">
+                    <span class="native-name">English</span>
+                    <span class="lang-name">English</span>
+                </button>
+                <button class="lang-btn" data-lang="te">
+                    <span class="native-name">తెలుగు</span>
+                    <span class="lang-name">Telugu</span>
+                </button>
+                <button class="lang-btn" data-lang="hi">
+                    <span class="native-name">हिन्दी</span>
+                    <span class="lang-name">Hindi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="main-app">
+        <!-- Header -->
+        <header>
+            <div class="container header-content">
+                <h2>
+                    <span class="text-gradient">Recipe</span> Collection
+                </h2>
+                <div class="lang-switcher">
+                    <button class="lang-switch-btn" data-lang="en">English</button>
+                    <button class="lang-switch-btn" data-lang="te">తెలుగు</button>
+                    <button class="lang-switch-btn" data-lang="hi">हिन्दी</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <span class="hero-emoji">✨</span>
+                    <h1 id="heroTitle" class="hero-title">Traditional Recipe Collection</h1>
+                    <p id="heroSubtitle" class="hero-subtitle">Discover the health benefits of authentic Indian delicacies</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Parallax Section with Recipes -->
+        <section class="parallax-section" id="parallaxSection">
+            <div class="overlay-dark"></div>
+            <div class="container recipes-container">
+                <div class="recipes-grid" id="recipesGrid">
+                    <!-- Recipes will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <p>Made with ❤️ for food lovers everywhere</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
